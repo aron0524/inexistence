@@ -3,8 +3,8 @@
 # https://github.com/Aniverse/inexistence
 # Author: Aniverse
 
-script_update=2019.07.25
-script_version=r10026
+script_update=2019.12.19
+script_version=r10027
 
 ################################################################################################ Debug
 
@@ -110,7 +110,7 @@ fi
 
 
 function install_deluge_dependencies() {
-    echo >> $OutputLOG
+    lines2 >> $OutputLOG
     status_lock=$AppNameLower-d
     echo "status_lock=$status_lock" > /tmp/Variables
     rm -f /tmp/$status_lock.1.lock /tmp/$status_lock.2.lock
@@ -126,7 +126,7 @@ function install_deluge_dependencies() {
     fi
 
     [[ -f /tmp/$status_lock.1.lock ]] && touch $LOCKLocation/$AppNameLower.dependencies.lock
-    echo >> $OutputLOG
+    lines2 >> $OutputLOG
 }
 
 
@@ -153,7 +153,7 @@ function fetch_source_codes() {
 # Install from source code
 function install_deluge_source() {
 
-    echo >> $OutputLOG
+    lines2 >> $OutputLOG
     status_lock=$AppNameLower
     echo "status_lock=$status_lock" > /tmp/Variables
     rm -f /tmp/$status_lock.1.lock /tmp/$status_lock.2.lock
@@ -172,7 +172,7 @@ function install_deluge_source() {
 
     python setup.py install_data # For Desktop users
 
-    echo >> $OutputLOG
+    lines2 >> $OutputLOG
     [[ -f /tmp/$status_lock.1.lock ]] && touch $LOCKLocation/deluge.lock
     [[ -f /tmp/$status_lock.1.lock ]] && touch $LOCKLocation/deluge.source.$version_s.LOCKLocation
 
@@ -181,7 +181,7 @@ function install_deluge_source() {
 
 
 function install_deluge_ppa() {
-    echo >> $OutputLOG
+    lines2 >> $OutputLOG
     status_lock=$AppNameLower
     echo "status_lock=$status_lock" > /tmp/Variables
     rm -f /tmp/$status_lock.1.lock /tmp/$status_lock.2.lock
@@ -192,13 +192,13 @@ function install_deluge_ppa() {
     >> $OutputLOG 2>&1  && touch /tmp/$status_lock.1.lock || touch /tmp/$status_lock.2.lock
 
     [[ -f /tmp/$status_lock.1.lock ]] && touch $LOCKLocation/${AppNameLower}{,.apt,.ppa}.lock
-    echo >> $OutputLOG
+    lines2 >> $OutputLOG
 }
 
 
 
 function install_deluge_apt() {
-    echo >> $OutputLOG
+    lines2 >> $OutputLOG
     status_lock=$AppNameLower
     echo "status_lock=$status_lock" > /tmp/Variables
     rm -f /tmp/$status_lock.1.lock /tmp/$status_lock.2.lock
@@ -207,7 +207,7 @@ function install_deluge_apt() {
     >> $OutputLOG 2>&1 && touch /tmp/$status_lock.1.lock || touch /tmp/$status_lock.2.lock
 
     [[ -f /tmp/$status_lock.1.lock ]] && touch $LOCKLocation/${AppNameLower}{,.apt,}.lock
-    echo >> $OutputLOG
+    lines2 >> $OutputLOG
 }
 
 
@@ -264,19 +264,14 @@ function deprecated_codes() {
 
 # Install another version of deluge (e.g. 1.3.9 for HD4FANS) Have bugs to be fixed
 function install_deluge_alt() {
-
-fetch_source_codes
-
-[[ $DESSL == Yes ]] && deluge_old_version_ssl_fix
-
-deluge_install_diff
-
-mv -f $SCLocation/deluge-$version-tmp/bin/deluged /usr/bin/deluged2 && touch /tmp/de.1.lock || touch /tmp/de.2.lock
-
-rm -rf $DeTmpPath
-
-[[ -f /tmp/de.1.lock ]] && touch $LOCKLocation/deluge.alt.lock
-[[ -f /tmp/de.1.lock ]] && touch $LOCKLocation/deluge.alt.$version.lock ; }
+    fetch_source_codes
+    [[ $DESSL == Yes ]] && deluge_old_version_ssl_fix
+    deluge_install_diff
+    mv -f $SCLocation/deluge-$version-tmp/bin/deluged /usr/bin/deluged2 && touch /tmp/de.1.lock || touch /tmp/de.2.lock
+    rm -rf $DeTmpPath
+    [[ -f /tmp/de.1.lock ]] && touch $LOCKLocation/deluge.alt.lock
+    [[ -f /tmp/de.1.lock ]] && touch $LOCKLocation/deluge.alt.$version.lock
+}
 
 
 
