@@ -3,8 +3,8 @@
 # https://github.com/Aniverse/inexistence
 # Author: Aniverse
 #
-script_update=2019.09.14
-script_version=r23123
+script_update=2019.12.19
+script_version=r23224
 ################################################################################################
 
 usage_guide() {
@@ -326,6 +326,54 @@ function online_dibbler() {
 
 
 
+
+###########################################################################
+
+
+
+
+function odhcp6c_install() {
+    for app in cmake git build-essential ; do
+        dpkg-query -W -f='${Status}' $app 2>/dev/null | grep -q "ok installed" || apt-get install -y $app
+    done
+
+    git clone --depth=1 https://github.com/openwrt/odhcp6c
+    cd odhcp6c
+    cmake .
+    make
+    make install
+    cd ..
+    rm -rf odhcp6c
+}
+
+
+function write_odhcp6c_systemd() {
+    cat << EOF > /etc/systemd/system/odhcp6c.service
+[Unit]
+Description=odhcp6c
+Wants=network.target
+Before=network.target
+[Service]
+Type=forking
+ExecStart=$(which odhcp6c) -c $DUID -P $subnet -d $interface
+ExecStartPost=$(which ip) -6 a a $IPv6/$subnet dev $interface
+ExecStartPost=$(which ip) -6 r a $IPv6/$subnet dev $interface
+[Install]
+WantedBy=multi-user.target
+EOF
+    systemctl daemon-reload
+    systemctl enable odhcp6c.service
+}
+
+
+function online_odhcp6c() {
+    check_var
+    odhcp6c_install
+    write_odhcp6c_systemd
+    systemctl start odhcp6c
+}
+
+
 ###########################################################################
 
 
@@ -448,6 +496,8 @@ ${bold}${green}Usage: ${normal}
              Typically, This is ONLY for Ubuntu 18.04
        ol3   Online dibbler, only for Online/OneProvider servers
              Typically, This is for Ubuntu 16.04/18.04, Debian 8/9/10
+       ol4   Online odhcp6c, only for Online/OneProvider servers
+             Still in development
 -6     Inupt IPv6
 -d     Input DUID
 -s     Input subnet
@@ -480,6 +530,7 @@ case $mode in
     ol  ) online_interfaces   ; ipv6_test   ; ask_reboot ;;
     ol2 ) online_netplan      ; ipv6_test  ;;
     ol3 ) online_dibbler      ; ask_reboot ;;
+    ol4 ) online_odhcp6c      ; ipv6_test  ;;
     t   ) info ; ipv6_test    ;;
     h   ) show_help           ;;
     c   ) cleanup             ;;
