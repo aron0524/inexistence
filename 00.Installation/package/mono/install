@@ -4,7 +4,7 @@
 # Author: Aniverse
 
 script_update=2020.01.14
-script_version=r10003
+script_version=r10004
 
 ################################################################################################ Debug
 
@@ -71,25 +71,20 @@ function install_mono() {
 
     echo >> $OutputLOG
 
-    if [[ $DISTRO == Ubuntu ]]; then
-        apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF >> $OutputLOG 2>&1
-    elif [[ $DISTRO == Debian ]]; then
-        if [[ $CODENAME == jessie ]]; then
-            apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF >> $OutputLOG 2>&1
-            wget -O libjpeg8.deb http://ftp.fr.debian.org/debian/pool/main/libj/libjpeg8/libjpeg8_8d-1+deb7u1_amd64.deb >> $OutputLOG 2>&1
-            dpkg -i libjpeg8.deb >> $OutputLOG 2>&1
-            rm -f libjpeg8.deb
-        elif [[ $CODENAME == stretch ]]; then
-            apt-key --keyring /etc/apt/trusted.gpg.d/mono-xamarin.gpg adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF >> $OutputLOG 2>&1
-        fi
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF >> $OutputLOG 2>&1
+    if [[ $CODENAME == jessie ]]; then
+        wget -O libjpeg8.deb http://ftp.fr.debian.org/debian/pool/main/libj/libjpeg8/libjpeg8_8d-1+deb7u1_amd64.deb >> $OutputLOG 2>&1
+        dpkg -i libjpeg8.deb >> $OutputLOG 2>&1
+        rm -f libjpeg8.deb
     fi
 
-  # [[ $CODENAME != buster ]] && 
   # echo "deb https://download.mono-project.com/repo/$DISTROL $CODENAME/snapshots/5.18/. main" > /etc/apt/sources.list.d/mono.list
-    echo "deb http://download.mono-project.com/repo/$DISTROL stable-$CODENAME main" > /etc/apt/sources.list.d/mono.list
+    if [[ $CODENAME != focal ]]; then
+        echo "deb http://download.mono-project.com/repo/$DISTROL stable-$CODENAME main" > /etc/apt/sources.list.d/mono.list
+    fi
 
     apt-get update >> $OutputLOG 2>&1
-    apt-get install -y mono-complete ca-certificates-mono >> $OutputLOG 2>&1
+    apt_install mono-complete ca-certificates-mono >> $OutputLOG 2>&1
 
     status_lock=$AppNameLower
     echo "status_lock=$status_lock" > /tmp/Variables

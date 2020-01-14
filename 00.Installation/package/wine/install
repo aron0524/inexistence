@@ -4,7 +4,7 @@
 # Author: Aniverse
 
 script_update=2020.01.14
-script_version=r10001
+script_version=r10002
 
 ################################################################################################ Debug
 
@@ -75,14 +75,15 @@ function install_wine() {
     apt-key add winehq.key >> $OutputLOG 2>&1
     rm -f winehq.key
 
-    if [[ $DISTRO == Ubuntu ]]; then
-        apt-add-repository -y https://dl.winehq.org/wine-builds/ubuntu/ >> $OutputLOG 2>&1
-    elif [[ $DISTRO == Debian ]]; then
+  # if [[ $DISTRO == Ubuntu ]]; then
+  #     apt-add-repository -y https://dl.winehq.org/wine-builds/ubuntu/ >> $OutputLOG 2>&1
+  # elif [[ $DISTRO == Debian ]]; then
+    [[ $CODENAME != focal ]] &&
         echo "deb https://dl.winehq.org/wine-builds/$DISTROL/ $CODENAME main" > /etc/apt/sources.list.d/wine.list
-    fi
+  # fi
 
     apt-get update >> $OutputLOG 2>&1
-    apt-get install -y winehq-stable >> $OutputLOG 2>&1       # --install-recommends
+    apt_install winehq-stable >> $OutputLOG 2>&1       # --install-recommends
 
     wget -nv -N https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks -O /usr/local/bin/winetricks >> $OutputLOG 2>&1
     chmod 755 /usr/local/bin/winetricks >> $OutputLOG 2>&1
