@@ -3,8 +3,8 @@
 # https://github.com/Aniverse/inexistence
 # Author: Aniverse
 
-script_update=2019.07.11
-script_version=r10000
+script_update=2020.01.14
+script_version=r10001
 
 ################################################################################################ Debug
 
@@ -83,6 +83,9 @@ function install_wine() {
 
     apt-get update >> $OutputLOG 2>&1
     apt-get install -y winehq-stable >> $OutputLOG 2>&1       # --install-recommends
+
+    wget -nv -N https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks -O /usr/local/bin/winetricks >> $OutputLOG 2>&1
+    chmod 755 /usr/local/bin/winetricks >> $OutputLOG 2>&1
 
     status_lock=$AppNameLower
     echo "status_lock=$status_lock" > /tmp/Variables
