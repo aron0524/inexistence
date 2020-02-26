@@ -10,6 +10,7 @@
 bash <(wget --no-check-certificate -qO- https://github.com/Aniverse/inexistence/raw/master/inexistence.sh)
 ```
 
+
 ## Notes
 
 1. 只在独服和 KVM 虚拟化的 VPS 下测试通过，OpenVZ、Xen 等其他架构不保证没问题  
